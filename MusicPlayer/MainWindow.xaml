@@ -14,9 +14,8 @@
         MinWidth="400"
         ThemeMode="System" 
         SizeChanged="Window_SizeChanged"
-        
+        Icon="pack://application:,,,/green.ico"
         >
-
     <Window.Resources>
         <ContextMenu x:Key="TrayMenu">
             <MenuItem Header="Open" />
