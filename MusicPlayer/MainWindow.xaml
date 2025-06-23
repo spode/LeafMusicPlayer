@@ -1,0 +1,178 @@
+﻿<Window x:Class="MusicPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicPlayer"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        
+        mc:Ignorable="d"
+        AllowDrop="True"
+        Title="MainWindow" 
+        Height="450"
+        Width="800"
+        MinWidth="400"
+        ThemeMode="System" 
+        SizeChanged="Window_SizeChanged"
+        
+        >
+
+    <Window.Resources>
+        <ContextMenu x:Key="TrayMenu">
+            <MenuItem Header="Open" />
+            <MenuItem Header="Exit" />
+        </ContextMenu>
+
+        <Popup x:Key="TrayStatusPopup">
+            <StackPanel>
+                <TextBlock Text="Status: Running"  FontWeight="Bold" />
+                <TextBlock Text="Click to open the application." />
+            </StackPanel>
+        </Popup>
+
+        <ToolTip x:Key="TrayToolTip">
+            <StackPanel>
+                <TextBlock Text="MusicPlayer"  />
+                <TextBlock Text="Running..."   />
+            </StackPanel>
+        </ToolTip>
+    </Window.Resources>
+
+
+    <Grid>
+        <!--
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="507*"/>
+            <ColumnDefinition Width="293*"/>
+        </Grid.ColumnDefinitions>
+-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,10" Grid.ColumnSpan="2">
+            <Button Name="OpenFolderButton" Background="Transparent" Cursor="Hand" Click="OpenFolderButton_Click" >
+                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE838;"/>
+            </Button>
+
+            <Button Name="AddFolderButton" Background="Transparent" Cursor="Hand" Click="AddFolderButton_Click" Margin="0,0,10,0"  >
+                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe710;"  />
+            </Button>
+
+            <Button Name="PlayButton" Background="Transparent" Cursor="Hand" Click="PlayButton_Click"  >
+                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Name="PlayPauseButton" Text="&#xE768;"/>
+            </Button>
+
+            <Button Name="NextButton" Background="Transparent" Cursor="Hand" Click="NextButton_Click"  >
+                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE893;"  />
+            </Button>
+
+            <Button Name="PlayRandomSongButton" Background="Transparent" Cursor="Hand" Click="PlayRandomSong_Click"  >
+                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe8f0;"  />
+            </Button>
+
+
+
+            <Slider IsMoveToPointEnabled="True" ValueChanged="VolumeSlider_ValueChanged" x:Name="VolumeSlider" Width="100" Minimum="0" Maximum="100" Value="50" Margin="10" 
+                    TickFrequency="1" IsSnapToTickEnabled="True" />
+
+            <Slider IsMoveToPointEnabled="True" x:Name="SongSeekBar" Width="300" Minimum="0" Maximum="1" Value="0" Margin="10" PreviewMouseLeftButtonUp="SongSeekBar_PreviewMouseLeftButtonUp"
+                 />
+        </StackPanel>
+
+        <ListBox Background="Transparent" Name="FilesListBox"  Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Image 
+                            Stretch="UniformToFill" 
+                            Width="50" 
+                            Height="50" 
+                            Source="{Binding Image}" 
+                            Grid.Column="0"
+                            />
+                        <TextBlock                            
+                            TextWrapping="WrapWithOverflow"
+                            MaxWidth="{Binding ActualWidth, ElementName=FilesListBox}"                            
+                            Text="{Binding Text}"
+                            Grid.Column="1" Padding="5,0,100,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,0"
+                            />
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" Grid.ColumnSpan="2">
+
+            <Image Source="/200.png"  Stretch="UniformToFill" x:Name="CurrentSongAlbumArtImage" Width="100" Height="100" />
+            <StackPanel Margin="10">
+
+
+                <TextBlock 
+                    x:Name="NowPlayingText"
+                    FontSize="24"
+                    FontWeight="Bold"                    
+                    Text="nothing is playing"   
+                    TextWrapping="Wrap"
+                   />
+
+
+                <TextBlock 
+                    x:Name="FolderNameText"
+                    FontWeight="Bold"
+                    Text="foldername"
+                   />
+
+                <TextBlock 
+                    x:Name="FileNameText"
+                    FontWeight="Bold"
+                    Text="filename"
+                   />
+
+
+                <TextBlock 
+                    x:Name="TimerText"                    
+                    FontWeight="Bold"
+                    FontSize="14"
+                    Text=""
+                    Margin="0,0,0,10"
+                    />
+
+            </StackPanel>
+        </StackPanel>
+
+        <tb:TaskbarIcon x:Name="myNotifyIcon"
+            Visibility="Visible"
+            ToolTipText="Fallback ToolTip for Windows xp"
+            IconSource="/green.png"
+            ContextMenu="{StaticResource TrayMenu}"
+            MenuActivation="None"
+            TrayPopup="{StaticResource TrayStatusPopup}"
+            PopupActivation="None"                        
+            TrayToolTip="{StaticResource TrayToolTip}" Grid.ColumnSpan="2"
+        />
+
+
+
+    </Grid>
+
+</Window>
