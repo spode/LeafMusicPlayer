@@ -86,7 +86,8 @@
                  />
         </StackPanel>
 
-        <ListBox Background="Transparent" Name="FilesListBox"  Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+        <ListBox Background="Transparent" Name="FilesListBox" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+            <!-- 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Padding" Value="10,5"/>
@@ -95,6 +96,7 @@
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 </Style>
             </ListBox.ItemContainerStyle>
+            -->
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
