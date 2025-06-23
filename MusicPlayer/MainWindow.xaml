@@ -8,7 +8,7 @@
         
         mc:Ignorable="d"
         AllowDrop="True"
-        Title="MainWindow" 
+        Title="Leaf Music Player" 
         Height="450"
         Width="800"
         MinWidth="400"
@@ -40,6 +40,10 @@
 
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="433*"/>
+            <ColumnDefinition Width="367*"/>
+        </Grid.ColumnDefinitions>
         <!--
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="507*"/>
@@ -54,23 +58,23 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,10" Grid.ColumnSpan="2">
-            <Button Name="OpenFolderButton" Background="Transparent" Cursor="Hand" Click="OpenFolderButton_Click" >
+            <Button ToolTip="Open Folder" Name="OpenFolderButton" Background="Transparent" Cursor="Hand" Click="OpenFolderButton_Click" >
                 <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE838;"/>
             </Button>
 
-            <Button Name="AddFolderButton" Background="Transparent" Cursor="Hand" Click="AddFolderButton_Click" Margin="0,0,10,0"  >
+            <Button ToolTip="Add Folder" Name="AddFolderButton" Background="Transparent" Cursor="Hand" Click="AddFolderButton_Click" Margin="0,0,10,0"  >
                 <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe710;"  />
             </Button>
 
-            <Button Name="PlayButton" Background="Transparent" Cursor="Hand" Click="PlayButton_Click"  >
+            <Button ToolTip="Play/Pause Song" Name="PlayButton" Background="Transparent" Cursor="Hand" Click="PlayButton_Click"  >
                 <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Name="PlayPauseButton" Text="&#xE768;"/>
             </Button>
 
-            <Button Name="NextButton" Background="Transparent" Cursor="Hand" Click="NextButton_Click"  >
+            <Button ToolTip="Skip Song" Name="NextButton" Background="Transparent" Cursor="Hand" Click="NextButton_Click"  >
                 <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE893;"  />
             </Button>
 
-            <Button Name="PlayRandomSongButton" Background="Transparent" Cursor="Hand" Click="PlayRandomSong_Click"  >
+            <Button ToolTip="Play Random Song" Name="PlayRandomSongButton" Background="Transparent" Cursor="Hand" Click="PlayRandomSong_Click"  >
                 <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe8f0;"  />
             </Button>
 
@@ -163,12 +167,12 @@
         <tb:TaskbarIcon x:Name="myNotifyIcon"
             Visibility="Visible"
             ToolTipText="Fallback ToolTip for Windows xp"
-            IconSource="/green.png"
+            IconSource="/green.ico"
             ContextMenu="{StaticResource TrayMenu}"
             MenuActivation="None"
             TrayPopup="{StaticResource TrayStatusPopup}"
             PopupActivation="None"                        
-            TrayToolTip="{StaticResource TrayToolTip}" Grid.ColumnSpan="2"
+            TrayToolTip="{StaticResource TrayToolTip}" Grid.ColumnSpan="2" Margin="0,0,0,211" Grid.RowSpan="2"
         />
 
 

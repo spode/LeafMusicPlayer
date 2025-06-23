@@ -187,6 +187,7 @@ namespace MusicPlayer
                 return;
 
             PlayPauseButton.Text = _currentState == PlaybackState.Paused ? "\uE768" : "\uE769";
+            //PlayPauseButton.ToolTip = _currentState == PlaybackState.Paused ? "Play Song" : "Pause Song";
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
