@@ -105,6 +105,8 @@
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="0,0,0,4"/>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                    <Setter Property="BorderThickness" Value="0"/>
                 </Style>
             </ListBox.ItemContainerStyle>
 
@@ -126,7 +128,8 @@
                             Source="{Binding Image}" 
                             Grid.Column="0"
                             />
-                        <TextBlock                            
+                        <TextBlock
+                            FontSize="16"
                             TextWrapping="WrapWithOverflow"
                             MaxWidth="{Binding ActualWidth, ElementName=FilesListBox}"                            
                             Text="{Binding Text}"
