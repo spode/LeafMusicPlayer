@@ -128,13 +128,18 @@ namespace MusicPlayer
 
             foreach (var file in newSongs)
             {
-                var taglibFile = TagLib.File.Create(file);
+                //var taglibFile = TagLib.File.Create(file);
+
+                using (var taglibFile = TagLib.File.Create(file))
+                {
+
                 var formattedAlbumString = taglibFile.Tag.Album?.Replace("Original Sound Track", "");
 
                 var item = new ListBoxItemData
                 {
-                    Text = $"{(index + 1).ToString("D2")} {formattedAlbumString} - {taglibFile.Tag.Title} - {taglibFile.Properties.Duration.Minutes}:{taglibFile.Properties.Duration.Seconds}",
-                    Image = GetBitmapImageFromFilePath(file) ?? new BitmapImage(new Uri("pack://application:,,,/200.png"))
+                        Text = $"{(index + 1).ToString("D2")}. {taglibFile.Tag.Title}",
+                        Text2 = $"{formattedAlbumString} | {taglibFile.Properties.Duration.ToString(@"mm\:ss")}",
+                        Image = GetBitmapImageFromFilePath(file) ?? placeholderImage
                 };
 
                 FilesListBox.Items.Add(item);
