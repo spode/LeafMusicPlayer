@@ -149,7 +149,8 @@ namespace MusicPlayer
 
         private BitmapImage? GetBitmapImageFromFilePath(string filePath)
         {
-            var file = TagLib.File.Create(filePath);
+            using (var file = TagLib.File.Create(filePath))
+            {
 
             BitmapImage bitmap = new BitmapImage();
 
@@ -163,6 +164,8 @@ namespace MusicPlayer
                     bitmap.BeginInit();
                     bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensures stream can close
                     bitmap.StreamSource = ms;
+                        bitmap.DecodePixelWidth = 200;
+
                     bitmap.EndInit();
                 }
 
