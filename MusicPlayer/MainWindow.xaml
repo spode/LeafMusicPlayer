@@ -53,7 +53,7 @@
 
 
 
-        <Grid Grid.Row="0" Margin="0,0,0,10">
+        <Grid Grid.Row="0" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -99,12 +99,20 @@
 
         </Grid>
 
-        <ListBox  Background="Transparent" Name="FilesListBox" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+        <ListBox Background="Transparent" Name="FilesListBox" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+
+            <ListBox.Template>
+                <ControlTemplate TargetType="ListBox">
+                    <ScrollViewer CanContentScroll="false">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ListBox.Template>
 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Margin" Value="0,0,0,4"/>
+                    <Setter Property="Margin" Value="10,0,10,10"/>
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                     <Setter Property="BorderThickness" Value="0"/>
                 </Style>
@@ -128,13 +136,22 @@
                             Source="{Binding Image}" 
                             Grid.Column="0"
                             />
-                        <TextBlock
-                            FontSize="16"
-                            TextWrapping="WrapWithOverflow"
-                            MaxWidth="{Binding ActualWidth, ElementName=FilesListBox}"                            
-                            Text="{Binding Text}"
-                            Grid.Column="1" Padding="5,0,100,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,0"
-                            />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="16"
+                                TextWrapping="WrapWithOverflow"
+                                MaxWidth="{Binding ActualWidth, ElementName=FilesListBox}"                            
+                                Text="{Binding Text}"
+                                Padding="5,0,100,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,0"
+                                />
+                            <TextBlock
+                                FontSize="10"
+                                TextWrapping="WrapWithOverflow"
+                                MaxWidth="{Binding ActualWidth, ElementName=FilesListBox}"                            
+                                Text="{Binding Text2}"
+                                Padding="5,0,100,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,0"
+                                />                            
+                        </StackPanel>
 
                     </Grid>
                 </DataTemplate>

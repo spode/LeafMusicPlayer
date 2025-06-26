@@ -25,6 +25,7 @@ namespace MusicPlayer
         private MediaPlayer Player;
         private List<string> songs = new();
         private List<string> ignoreList = new();
+        private static readonly BitmapImage placeholderImage = new(new Uri("pack://application:,,,/200.png"));
 
         private int currentSongIndex;
         private DispatcherTimer timer;
@@ -88,16 +89,18 @@ namespace MusicPlayer
             timer.Start();
             Player.Open(new Uri(songs[songIndex]));
 
-            var file = TagLib.File.Create(songs[songIndex]);
+            //var file = TagLib.File.Create(songs[songIndex]);
 
-            var formattedAlbumString = file.Tag.Album?.Replace("Original Sound Track", "");
+            using (var file = TagLib.File.Create(songs[songIndex])) { 
+                var formattedAlbumString = file.Tag.Album?.Replace("Original Sound Track", "");
 
-            NowPlayingText.Text = $"{formattedAlbumString} - {file.Tag.Title}";
-            CurrentSongAlbumArtImage.Source = GetBitmapImageFromFilePath(songs[songIndex]);
-            FilesListBox.SelectedItem = FilesListBox.Items[currentSongIndex];
-            ChangeState(PlaybackState.Playing);
-            FileNameText.Text = Path.GetFileName(songs[songIndex]);
-            FilesListBox.ScrollIntoView(FilesListBox.SelectedItem);
+                NowPlayingText.Text = $"{formattedAlbumString} - {file.Tag.Title}";
+                CurrentSongAlbumArtImage.Source = GetBitmapImageFromFilePath(songs[songIndex]);
+                FilesListBox.SelectedItem = FilesListBox.Items[currentSongIndex];
+                ChangeState(PlaybackState.Playing);
+                FileNameText.Text = Path.GetFileName(songs[songIndex]);
+                FilesListBox.ScrollIntoView(FilesListBox.SelectedItem);
+            }
         }
 
         // Function to shuffle the list
@@ -133,17 +136,18 @@ namespace MusicPlayer
                 using (var taglibFile = TagLib.File.Create(file))
                 {
 
-                var formattedAlbumString = taglibFile.Tag.Album?.Replace("Original Sound Track", "");
+                    var formattedAlbumString = taglibFile.Tag.Album?.Replace("Original Sound Track", "");
 
-                var item = new ListBoxItemData
-                {
+                    var item = new ListBoxItemData
+                    {
                         Text = $"{(index + 1).ToString("D2")}. {taglibFile.Tag.Title}",
                         Text2 = $"{formattedAlbumString} | {taglibFile.Properties.Duration.ToString(@"mm\:ss")}",
                         Image = GetBitmapImageFromFilePath(file) ?? placeholderImage
-                };
-
-                FilesListBox.Items.Add(item);
-                index++;
+                    };
+                    
+                    FilesListBox.Items.Add(item);
+                    index++;
+                 }
             }
         }
 
@@ -152,39 +156,43 @@ namespace MusicPlayer
             using (var file = TagLib.File.Create(filePath))
             {
 
-            BitmapImage bitmap = new BitmapImage();
+                BitmapImage bitmap = new BitmapImage();
 
-            if (file.Tag.Pictures.Length > 0)
-            {
-                var pic = file.Tag.Pictures[0];
-                byte[] imageData = pic.Data.Data;
-
-                using (var ms = new MemoryStream(imageData))
+                if (file.Tag.Pictures.Length > 0)
                 {
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensures stream can close
-                    bitmap.StreamSource = ms;
+                    var pic = file.Tag.Pictures[0];
+                    byte[] imageData = pic.Data.Data;
+
+                    using (var ms = new MemoryStream(imageData))
+                    {
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensures stream can close
+                        bitmap.StreamSource = ms;
                         bitmap.DecodePixelWidth = 200;
 
-                    bitmap.EndInit();
+                        bitmap.EndInit();
+                    }
+
+                    return bitmap;
                 }
+
+                string directory = Path.GetDirectoryName(filePath);
+                string path = Path.Combine(directory, "cover.png");
+                if (!File.Exists(path))
+                {
+                    path = Path.Combine(directory, "cover.jpg");
+                    if (!File.Exists(path))
+                        return null;
+                }
+
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(path);
+                bitmap.DecodePixelWidth = 200;
+
+                bitmap.EndInit();
 
                 return bitmap;
             }
-
-            string directory = Path.GetDirectoryName(filePath);
-            string path = Path.Combine(directory, "cover.png");
-            if (!File.Exists(path))
-            {
-                path = Path.Combine(directory, "cover.jpg");
-                if (!File.Exists(path))
-                    return null;
-            }
-
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path);
-            bitmap.EndInit();
-            return bitmap;
         }
 
         private void ChangePlayPauseButton()
@@ -198,7 +206,23 @@ namespace MusicPlayer
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
+            AddToIgnoreList(songs[currentSongIndex]);
             PlayNextSong();
+        }
+
+        public void AddToIgnoreList(string songPath)
+        {
+            string ignoreListPath = "ignorelist.txt";
+
+            // Check if the file exists
+            if (!File.Exists(ignoreListPath))
+            {
+                // If the file does not exist, create it
+                File.Create(ignoreListPath).Dispose();
+            }
+
+            // Add the song path to the ignore list
+            File.AppendAllText(ignoreListPath, songPath + Environment.NewLine);
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
