@@ -34,6 +34,7 @@ namespace MusicPlayer
         public class ListBoxItemData
         {
             public string Text { get; set; }
+            public string Text2 { get; set; }
             public ImageSource Image { get; set; }
         }
 
