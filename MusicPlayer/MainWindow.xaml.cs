@@ -86,6 +86,9 @@ namespace MusicPlayer
 
         private void PlaySong(int songIndex)
         {
+            if (songs.Count <= 0)
+                return;
+
             timer.Start();
             Player.Open(new Uri(songs[songIndex]));
 
@@ -168,7 +171,7 @@ namespace MusicPlayer
                         bitmap.BeginInit();
                         bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensures stream can close
                         bitmap.StreamSource = ms;
-                        bitmap.DecodePixelWidth = 200;
+                        bitmap.DecodePixelWidth = 100;
 
                         bitmap.EndInit();
                     }
@@ -187,7 +190,7 @@ namespace MusicPlayer
 
                 bitmap.BeginInit();
                 bitmap.UriSource = new Uri(path);
-                bitmap.DecodePixelWidth = 200;
+                bitmap.DecodePixelWidth = 100;
 
                 bitmap.EndInit();
 
@@ -197,15 +200,15 @@ namespace MusicPlayer
 
         private void ChangePlayPauseButton()
         {
-            if (_currentState == PlaybackState.Stopped)
-                return;
+            if (_currentState == PlaybackState.Stopped) return;
 
             PlayPauseButton.Text = _currentState == PlaybackState.Paused ? "\uE768" : "\uE769";
-            //PlayPauseButton.ToolTip = _currentState == PlaybackState.Paused ? "Play Song" : "Pause Song";
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
+            if (songs.Count <= 0) return;
+
             AddToIgnoreList(songs[currentSongIndex]);
             PlayNextSong();
         }
@@ -227,8 +230,8 @@ namespace MusicPlayer
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            if (songs.Count == 0)
-                return;
+            if (songs.Count == 0) return;
+
 
             switch (_currentState)
             {
@@ -283,7 +286,29 @@ namespace MusicPlayer
             PlaySong(currentSongIndex);
         }
 
-        void AddSongsFromFolder(bool ShouldAppend = false)
+        private async Task ProcessSongAsync(string song, int minDurationInSeconds, List<string> ignoreList, List<string> validSongs)
+        {
+            try
+            {
+                var file = await Task.Run(() => TagLib.File.Create(song)); // Offload the blocking operation to a background thread
+
+                var duration = file.Properties.Duration.TotalSeconds;
+
+                if (duration >= minDurationInSeconds && !ignoreList.Contains(Path.GetFileName(song)))
+                {
+                    lock (validSongs) // Use lock to avoid concurrency issues with the list
+                    {
+                        validSongs.Add(song);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing file {song}: {ex.Message}");
+            }
+        }
+
+        async Task<bool> AddSongsFromFolder(bool ShouldAppend = false)
         {
             Microsoft.Win32.OpenFolderDialog dialog = new();
 
@@ -291,7 +316,6 @@ namespace MusicPlayer
             dialog.Title = "Select a folder";
 
             bool? result = dialog.ShowDialog();
-
 
             if (result == true)
             {
@@ -309,24 +333,16 @@ namespace MusicPlayer
                 var validSongs = new List<string>();
                 var minDurationInSeconds = 20;
 
+                var tasks = new List<Task>(); // List to hold the tasks for concurrent processing
+
+                // Process each song asynchronously
                 foreach (var song in newsongs)
                 {
-                    try
-                    {
-                        var file = TagLib.File.Create(song);
-
-                        var duration = file.Properties.Duration.TotalSeconds;
-
-                        if (duration >= minDurationInSeconds && !ignoreList.Contains(Path.GetFileName(song)))
-                        {
-                            validSongs.Add(song);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error processing file {song}: {ex.Message}");
-                    }
+                    tasks.Add(ProcessSongAsync(song, minDurationInSeconds, ignoreList, validSongs));
                 }
+
+                // Wait for all tasks to complete
+                await Task.WhenAll(tasks);
 
                 if (ShouldAppend)
                     songs.AddRange(validSongs);
@@ -336,15 +352,16 @@ namespace MusicPlayer
                 ShuffleList(songs);
                 AddSongsToFilesListBox(songs);
             }
+            return true;
         }
-        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            AddSongsFromFolder(false);
+        private async void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {            
+            await AddSongsFromFolder(false);           
         }
 
-        private void AddFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void AddFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            AddSongsFromFolder(true);
+            await AddSongsFromFolder(true);
         }
 
         private void SongSeekBar_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -352,6 +369,11 @@ namespace MusicPlayer
             long ticks = Player.NaturalDuration.TimeSpan.Ticks;
             ticks = (long)(ticks * SongSeekBar.Value);
             Player.Position = new TimeSpan(ticks);
+        }
+
+        private void ExitApplication_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

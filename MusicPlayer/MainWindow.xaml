@@ -38,60 +38,69 @@
 
 
     <Grid>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
+        
+        
 
         <Grid.RowDefinitions>
+
+            <!--playback buttons-->
             <RowDefinition Height="Auto" />
+            
+            <!--playlist items-->
             <RowDefinition Height="*" />
+            
+            <!--current item-->
             <RowDefinition Height="Auto" />
+
+            <!--taskbar thing -->
+            <!--<RowDefinition Height="Auto" /> -->
         </Grid.RowDefinitions>
 
+        <!--<ProgressBar Visibility="Hidden" x:Name="ProgressBarThing"  Grid.Row="0" IsIndeterminate="True" /> -->
 
-
-
-        <Grid Grid.Row="0" Margin="10">
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
+
                 <!-- First slider fills remaining space -->
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+
                 <!-- Second slider fills remaining space -->
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center" Grid.Column="0" Orientation="Horizontal">
             
-            <Button Grid.Column="0" ToolTip="Open Folder" Name="OpenFolderButton" Background="Transparent" Cursor="Hand" Click="OpenFolderButton_Click" >
-                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE838;"/>
-            </Button>
+                <Button ToolTip="Open Folder" Name="OpenFolderButton" Background="Transparent" Cursor="Hand" Click="OpenFolderButton_Click" >
+                    <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE838;"/>
+                </Button>
 
-            <Button Grid.Column="1" ToolTip="Add Folder" Name="AddFolderButton" Background="Transparent" Cursor="Hand" Click="AddFolderButton_Click" Margin="0,0,10,0"  >
-                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe710;"  />
-            </Button>
+                <Button ToolTip="Add Folder" Name="AddFolderButton" Background="Transparent" Cursor="Hand" Click="AddFolderButton_Click" Margin="0,0,10,0"  >
+                    <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe710;"  />
+                </Button>
 
-            <Button Grid.Column="2" ToolTip="Play/Pause Song" Name="PlayButton" Background="Transparent" Cursor="Hand" Click="PlayButton_Click"  >
-                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Name="PlayPauseButton" Text="&#xE768;"/>
-            </Button>
+                <Button ToolTip="Play/Pause Song" Name="PlayButton" Background="Transparent" Cursor="Hand" Click="PlayButton_Click"  >
+                    <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Name="PlayPauseButton" Text="&#xE768;"/>
+                </Button>
 
-            <Button Grid.Column="3" ToolTip="Skip Song" Name="NextButton" Background="Transparent" Cursor="Hand" Click="NextButton_Click"  >
-                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE893;"  />
-            </Button>
+                <Button ToolTip="Skip Song" Name="NextButton" Background="Transparent" Cursor="Hand" Click="NextButton_Click"  >
+                    <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE893;"  />
+                </Button>
 
-            <Button Grid.Column="4" ToolTip="Play Random Song" Name="PlayRandomSongButton" Background="Transparent" Cursor="Hand" Click="PlayRandomSong_Click"  >
-                <TextBlock FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xe8f0;"  />
-            </Button>
+                <Button Padding="0,6" ToolTip="Play Random Song" Name="PlayRandomSongButton" Background="Transparent" Cursor="Hand" Click="PlayRandomSong_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                        <TextBlock FontSize="48" Padding="0" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE768;"  />
+                        <TextBlock Margin="-20,0,0,0" Padding="0" FontSize="48" FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE897;"  />
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
 
 
 
-            <Slider Grid.Column="5" IsMoveToPointEnabled="True" ValueChanged="VolumeSlider_ValueChanged" x:Name="VolumeSlider" Width="100" Minimum="0" Maximum="100" Value="50" Margin="10" 
+            <Slider VerticalAlignment="Center" Grid.Column="1" IsMoveToPointEnabled="True" ValueChanged="VolumeSlider_ValueChanged" x:Name="VolumeSlider" Width="100" Minimum="0" Maximum="100" Value="50" Margin="10" 
                     TickFrequency="1" IsSnapToTickEnabled="True" />
 
-            <Slider Grid.Column="6" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True" x:Name="SongSeekBar" Minimum="0" Maximum="1" Value="0" Margin="10" PreviewMouseLeftButtonUp="SongSeekBar_PreviewMouseLeftButtonUp"
+            <Slider VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True" x:Name="SongSeekBar" Minimum="0" Maximum="1" Value="0" Margin="10" PreviewMouseLeftButtonUp="SongSeekBar_PreviewMouseLeftButtonUp"
         />
             
 
@@ -99,11 +108,11 @@
 
         </Grid>
 
-        <ListBox Background="Transparent" Name="FilesListBox" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" Grid.ColumnSpan="2" Margin="0,0,0,132" Grid.RowSpan="2">
+        <ListBox Grid.Row="1"  Background="Transparent" Name="FilesListBox" d:ItemsSource="{d:SampleData ItemCount=5}"  MouseDoubleClick="FilesListBox_MouseDoubleClick" >
 
             <ListBox.Template>
                 <ControlTemplate TargetType="ListBox">
-                    <ScrollViewer CanContentScroll="false">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="true">
                         <ItemsPresenter />
                     </ScrollViewer>
                 </ControlTemplate>
@@ -158,7 +167,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10" Grid.ColumnSpan="2">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0">
 
             <Image Source="/200.png"  Stretch="UniformToFill" x:Name="CurrentSongAlbumArtImage" Width="100" Height="100" />
             <StackPanel Margin="10">
@@ -197,7 +206,8 @@
             </StackPanel>
         </StackPanel>
 
-        <tb:TaskbarIcon x:Name="myNotifyIcon"
+        <!-- Taskbar Icon
+        <tb:TaskbarIcon Grid.Row="4" x:Name="myNotifyIcon"
             Visibility="Hidden"
             ToolTipText="Fallback ToolTip for Windows xp"
             IconSource="/green.ico"
@@ -207,7 +217,7 @@
             PopupActivation="None"                        
             TrayToolTip="{StaticResource TrayToolTip}" Grid.RowSpan="2" Margin="0,0,0,211"
         />
-
+ -->
 
 
     </Grid>
